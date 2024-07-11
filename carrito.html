@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito</title>
+    <link rel="stylesheet" href="estillo.css">
+</head>
+<body>
+    <!-- Carrito de Compras -->
+    <div class="cart">
+        <h2>Productos Seleccionados</h2>
+        <div class="cart-items"></div>
+        <div class="cart-actions">
+            <button class="btn btn-primary checkout">Comprar</button>
+            <button class="btn clear-cart">Limpiar Carrito</button>
+        </div>
+    </div>
+
+    <!-- JavaScript para manejar el carrito -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            function showCartItems() {
+                const cartItemsContainer = document.querySelector(".cart-items");
+                cartItemsContainer.innerHTML = ""; // Limpiamos el contenedor antes de agregar los nuevos productos
+
+                cart.forEach((item, index) => {
+                    const cartItem = document.createElement("div");
+                    cartItem.classList.add("cart-item", "text-white");
+
+                    const productImage = document.createElement("img");
+                    productImage.src = item.image;
+                    productImage.alt = item.name;
+
+                    const productInfo = document.createElement("div");
+                    productInfo.classList.add("product-info");
+
+                    const productName = document.createElement("span");
+                    productName.textContent = item.name;
+
+                    const productPrice = document.createElement("span");
+                    productPrice.textContent = item.price;
+
+                    const deleteButton = document.createElement("button");
+                    deleteButton.classList.add("btn", "btn-delete");
+                    deleteButton.textContent = "Eliminar";
+                    deleteButton.addEventListener("click", () => {
+                        removeFromCart(index);
+                    });
+
+                    productInfo.appendChild(productName);
+                    productInfo.appendChild(productPrice);
+
+                    cartItem.appendChild(productImage);
+                    cartItem.appendChild(productInfo);
+                    cartItem.appendChild(deleteButton);
+
+                    cartItemsContainer.appendChild(cartItem);
+                });
+            }
+
+            function removeFromCart(index) {
+                cart.splice(index, 1);
+                localStorage.setItem("cart", JSON.stringify(cart));
+                showCartItems(); // Actualizamos la visualización del carrito
+            }
+
+            document.querySelector(".clear-cart").addEventListener("click", () => {
+                cart = [];
+                localStorage.setItem("cart", JSON.stringify(cart));
+                showCartItems(); // Limpiamos y actualizamos la visualización del carrito
+            });
+
+            document.querySelector(".checkout").addEventListener("click", () => {
+                // Redirigir a WhatsApp con los productos seleccionados
+                const phoneNumber = "931828869";
+                const message = `Hola, estoy interesado en los siguientes productos:\n\n${cart.map(item => `· ${item.name} - ${item.price}`).join("\n")}\n\nPor favor, contáctame para finalizar la compra.`;
+                window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, "_blank");
+            });
+
+            // Inicialización
+            showCartItems();
+        });
+    </script>
+</body>
+</html>
+
+
